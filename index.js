@@ -37,27 +37,38 @@ class MiniRouter {
       const path = req.url;
 
       const routeHandler = this.routes[method][path];
-
-      if (routeHandler) {
-        let body = "";
-        req.on("data", chunk => {
-          body += chunk.toString();
-        });
-        req.on("end", () => {
-          try {
-            req.body = body ? JSON.parse(body) : {};
-          } catch {
-            req.body = {};
-          }
-          routeHandler(req, res);
-        });
-      } else {
+      
+      if (!routeHandler) {
         res.statusCode = 404;
-        res.end(JSON.stringify({ message: "Route not found" }));
+        return res.end(JSON.stringify({ message: "Route not found" }));
       }
+
+      this.parseBody(req, () => {
+        routeHandler(req, res);
+      });
     });
 
     server.listen(port, callback);
+  }
+
+  parseBody(req, runHandler) {
+    if (!["POST", "PUT", "PATCH"].includes(req.method)) {
+      req.body = {};
+      return runHandler();
+    }
+
+    let body = "";
+    req.on("data", chunk => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      try {
+        req.body = body ? JSON.parse(body) : {};
+      } catch {
+        req.body = {};
+      }
+      runHandler();
+    });
   }
 }
 

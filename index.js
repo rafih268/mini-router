@@ -37,6 +37,8 @@ class MiniRouter {
       const path = req.url;
 
       const routeHandlers = this.routes[method][path];
+
+      res.setHeader("Content-Type", "application/json");
       
       if (!routeHandlers) {
         res.statusCode = 404;

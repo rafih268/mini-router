@@ -8,6 +8,7 @@ A lightweight Node.js HTTP routing package built from scratch using the native `
 - Supports **five HTTP methods**: GET, POST, PUT, PATCH, DELETE
 - Request body parsing for JSON requests
 - Organised **controllers** for maintainable code
+- Chained middleware functions
 
 ## Installation
 
@@ -29,10 +30,19 @@ exports.getHandler = (req, res) => {
 };
 ```
 
-2. Register routes in `server.js`
+2. Add middleware functions in `middlewares/`
 
 ```bash
-app.get("/api", <controller-file-name>.getHandler);
+exports.middlewareOne = (req, res, next) => {
+  // Middleware Task ...
+  next();
+}
+```
+
+3. Register routes in `server.js`
+
+```bash
+app.get("/api", <applicable-middleware>, <controller-file-name>.getHandler);
 ```
 
 **NOTE: Download Postman to test the routes**
@@ -41,15 +51,15 @@ app.get("/api", <controller-file-name>.getHandler);
 - Routes are stored internally in an object like:
 ```bash
 {
-  GET: { "/path": handlerFunction },
-  POST: { "/path": handlerFunction }
+  GET: { "/path": handlerFunctions },
+  POST: { "/path": handlerFunctions }
 }
 ```
 
 - When a request comes in:
 1. The HTTP method and path are matched against the stored routes.
 2. If the route exists, the request body of the request is stored.
-3. Finally, the handler function is executed.
+3. Finally, the handler functions are executed.
 
 ## Learning Outcome
 
@@ -57,6 +67,7 @@ This project has allowed me to understand the internals of routing in Node.js:
 - Direct use of Node's http module.
 - Manual body parsing.
 - Explicit route matching.
+- Explicit chaining of middleware functions.
 
 ## Git Respository Structure
 - `main` branch -> All reviewed code.

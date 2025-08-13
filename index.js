@@ -11,24 +11,24 @@ class MiniRouter {
     };
   }
 
-  get(path, handler) {
-    this.routes.GET[path] = handler;
+  get(path, ...handlers) {
+    this.routes.GET[path] = handlers;
   }
 
-  post(path, handler) {
-    this.routes.POST[path] = handler;
+  post(path, ...handlers) {
+    this.routes.POST[path] = handlers;
   }
 
-  put(path, handler) {
-    this.routes.PUT[path] = handler;
+  put(path, ...handlers) {
+    this.routes.PUT[path] = handlers;
   }
 
-  patch(path, handler) {
-    this.routes.PATCH[path] = handler;
+  patch(path, ...handlers) {
+    this.routes.PATCH[path] = handlers;
   }
 
-  delete(path, handler) {
-    this.routes.DELETE[path] = handler;
+  delete(path, ...handlers) {
+    this.routes.DELETE[path] = handlers;
   }
 
   listen(port, callback) {
@@ -36,25 +36,25 @@ class MiniRouter {
       const method = req.method;
       const path = req.url;
 
-      const routeHandler = this.routes[method][path];
+      const routeHandlers = this.routes[method][path];
       
-      if (!routeHandler) {
+      if (!routeHandlers) {
         res.statusCode = 404;
         return res.end(JSON.stringify({ message: "Route not found" }));
       }
 
       this.parseBody(req, () => {
-        routeHandler(req, res);
+        this.runHandlers(routeHandlers, req, res);
       });
     });
 
     server.listen(port, callback);
   }
 
-  parseBody(req, runHandler) {
+  parseBody(req, handle) {
     if (!["POST", "PUT", "PATCH"].includes(req.method)) {
       req.body = {};
-      return runHandler();
+      return handle();
     }
 
     let body = "";
@@ -67,8 +67,19 @@ class MiniRouter {
       } catch {
         req.body = {};
       }
-      runHandler();
+      handle();
     });
+  }
+
+  runHandlers(handlers, req, res) {
+    let index = 0;
+    const next = () => {
+      const handler = handlers[index++];
+      if (handler) {
+        handler(req, res, next);
+      }
+    };
+    next();
   }
 }
 

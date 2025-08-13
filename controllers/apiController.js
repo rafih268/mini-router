@@ -3,7 +3,12 @@ exports.getHandler = (req, res) => {
 };
 
 exports.postHandler = (req, res) => {
-  res.end(JSON.stringify({ message: "POST request received", data: req.body }));
+  res.end(JSON.stringify({
+    message: "POST request received",
+    data: req.body,
+    middlewareOneExecuted: req.middlewareOneExecuted,
+    middlewareTwoExecuted: req.middlewareTwoExecuted
+  }));
 }
 
 exports.putHandler = (req, res) => {

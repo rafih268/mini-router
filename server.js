@@ -1,11 +1,12 @@
 const MiniRouter = require("./index");
 const apiController = require("./controllers/apiController");
+const middleware = require("./middlewares/apiMiddleware")
 
 const app = new MiniRouter();
 
 app.get("/api", apiController.getHandler);
 
-app.post("/api", apiController.postHandler);
+app.post("/api", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
 
 app.put("/api", apiController.putHandler);
 

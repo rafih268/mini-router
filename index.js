@@ -1,0 +1,88 @@
+const http = require("http");
+
+class MiniRouter {
+  constructor() {
+    this.routes = {
+      GET: {},
+      POST: {},
+      PUT: {},
+      PATCH: {},
+      DELETE: {},
+    };
+  }
+
+  get(path, ...handlers) {
+    this.routes.GET[path] = handlers;
+  }
+
+  post(path, ...handlers) {
+    this.routes.POST[path] = handlers;
+  }
+
+  put(path, ...handlers) {
+    this.routes.PUT[path] = handlers;
+  }
+
+  patch(path, ...handlers) {
+    this.routes.PATCH[path] = handlers;
+  }
+
+  delete(path, ...handlers) {
+    this.routes.DELETE[path] = handlers;
+  }
+
+  listen(port, callback) {
+    const server = http.createServer((req, res) => {
+      const method = req.method;
+      const path = req.url;
+
+      const routeHandlers = this.routes[method][path];
+
+      res.setHeader("Content-Type", "application/json");
+      
+      if (!routeHandlers) {
+        res.statusCode = 404;
+        return res.end(JSON.stringify({ message: "Route not found" }));
+      }
+
+      this.parseBody(req, () => {
+        this.runHandlers(routeHandlers, req, res);
+      });
+    });
+
+    server.listen(port, callback);
+  }
+
+  parseBody(req, handle) {
+    if (!["POST", "PUT", "PATCH"].includes(req.method)) {
+      req.body = {};
+      return handle();
+    }
+
+    let body = "";
+    req.on("data", chunk => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      try {
+        req.body = body ? JSON.parse(body) : {};
+      } catch {
+        req.body = {};
+      }
+      handle();
+    });
+  }
+
+  runHandlers(handlers, req, res) {
+    let index = 0;
+    const next = () => {
+      const handler = handlers[index++];
+      if (handler) {
+        handler(req, res, next);
+      }
+    };
+    next();
+  }
+}
+
+module.exports = MiniRouter;

@@ -1,4 +1,4 @@
-# mini-router
+# Mini Router
 
 A lightweight Node.js HTTP routing package built from scratch using the native `http` module.
 

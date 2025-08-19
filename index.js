@@ -36,9 +36,18 @@ class MiniRouter {
       const method = req.method;
       const path = req.url;
 
-      const routeHandlers = this.routes[method][path];
+      let routeHandlers = null;
 
       res.setHeader("Content-Type", "application/json");
+
+      for (const [routePath, handlers] of Object.entries(this.routes[method])) {
+        const params = this.getParams(routePath, path);
+        if (params) {
+          req.params = params;
+          routeHandlers = handlers;
+          break;
+        }
+      }
       
       if (!routeHandlers) {
         res.statusCode = 404;

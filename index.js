@@ -83,6 +83,28 @@ class MiniRouter {
     };
     next();
   }
+
+  getParams(cachedPath, reqPath) {
+    const cachedSplit = cachedPath.split('/');
+    const reqSplit = reqPath.split('/');
+  
+    if (cachedSplit.length !== reqSplit.length) {
+      return null;
+    }
+  
+    const param = {}
+
+    for (let i = 0; i < cachedSplit.length; i++) {
+      if (cachedSplit[i].startsWith(':')) {
+        const paramName = cachedSplit[i].slice(1);
+        param[paramName] = reqSplit[i];
+      } else if (cachedSplit[i] !== reqSplit[i]) {
+        return null;
+      }
+    }
+  
+    return param;
+  }
 }
 
 module.exports = MiniRouter;

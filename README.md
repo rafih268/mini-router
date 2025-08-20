@@ -9,6 +9,8 @@ A lightweight Node.js HTTP routing package built from scratch using the native `
 - Request body parsing for JSON requests
 - Organised **controllers** for maintainable code
 - Chained middleware functions
+- Supports router parameters
+- Supports route query strings
 
 ## Installation
 
@@ -68,6 +70,8 @@ This project has allowed me to understand the internals of routing in Node.js:
 - Manual body parsing.
 - Explicit route matching.
 - Explicit chaining of middleware functions.
+- Identifying route parameters and assigning them to `req.params`.
+- Parsing query strings and assigning them to `req.query`.
 
 ## Git Respository Structure
 - `main` branch -> All reviewed code.

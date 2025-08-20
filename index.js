@@ -1,4 +1,5 @@
 const http = require("http");
+const url = require("url");
 
 class MiniRouter {
   constructor() {
@@ -33,8 +34,12 @@ class MiniRouter {
 
   listen(port, callback) {
     const server = http.createServer((req, res) => {
+
+      const parsedUrl = url.parse(req.url, true);
+
       const method = req.method;
-      const path = req.url;
+      const path = parsedUrl.pathname;
+      req.query = parsedUrl.query;
 
       let routeHandlers = null;
 

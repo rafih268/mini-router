@@ -5,7 +5,8 @@ exports.getHandler = (req, res) => {
 exports.getUserHandler = (req, res) => {
   res.end(JSON.stringify({
     message: "GET request received",
-    userID: req.params.id
+    userID: req.params.id,
+    query: req.query
   }));
 }
 

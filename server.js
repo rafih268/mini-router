@@ -4,6 +4,15 @@ const middleware = require("./middlewares/apiMiddleware")
 
 const app = new MiniRouter();
 
+app.use((req, res, next) => {
+  if (req.query.access_key) {
+    req.query.access_key == 1
+      ? next() : res.end(JSON.stringify({ error: "Access key does not match" }));
+  } else {
+    res.end(JSON.stringify({ error: "Access key not found" }));
+  }
+})
+
 app.get("/api", apiController.getHandler);
 
 app.get("/api/users/:id", apiController.getUserHandler);

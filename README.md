@@ -11,6 +11,7 @@ A lightweight Node.js HTTP routing package built from scratch using the native `
 - Chained middleware functions
 - Supports router parameters
 - Supports route query strings
+- Supports global middlewares using `.use()`
 
 ## Installation
 
@@ -72,6 +73,7 @@ This project has allowed me to understand the internals of routing in Node.js:
 - Explicit chaining of middleware functions.
 - Identifying route parameters and assigning them to `req.params`.
 - Parsing query strings and assigning them to `req.query`.
+- Applying global middlewares.
 
 ## Git Respository Structure
 - `main` branch -> All reviewed code.

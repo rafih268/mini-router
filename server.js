@@ -6,6 +6,8 @@ const app = new MiniRouter();
 
 app.get("/api", apiController.getHandler);
 
+app.get("/api/users/:id", apiController.getUserHandler);
+
 app.post("/api", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
 
 app.put("/api", apiController.putHandler);

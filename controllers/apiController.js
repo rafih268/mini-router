@@ -2,6 +2,14 @@ exports.getHandler = (req, res) => {
   res.end(JSON.stringify({ message: "GET request received" }));
 };
 
+exports.getUserHandler = (req, res) => {
+  res.end(JSON.stringify({
+    message: "GET request received",
+    userID: req.params.id,
+    query: req.query
+  }));
+}
+
 exports.postHandler = (req, res) => {
   res.end(JSON.stringify({
     message: "POST request received",

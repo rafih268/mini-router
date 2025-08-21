@@ -1,4 +1,5 @@
 const http = require("http");
+const url = require("url");
 
 class MiniRouter {
   constructor() {
@@ -33,12 +34,25 @@ class MiniRouter {
 
   listen(port, callback) {
     const server = http.createServer((req, res) => {
-      const method = req.method;
-      const path = req.url;
 
-      const routeHandlers = this.routes[method][path];
+      const parsedUrl = url.parse(req.url, true);
+
+      const method = req.method;
+      const path = parsedUrl.pathname;
+      req.query = parsedUrl.query;
+
+      let routeHandlers = null;
 
       res.setHeader("Content-Type", "application/json");
+
+      for (const [routePath, handlers] of Object.entries(this.routes[method])) {
+        const params = this.getParams(routePath, path);
+        if (params) {
+          req.params = params;
+          routeHandlers = handlers;
+          break;
+        }
+      }
       
       if (!routeHandlers) {
         res.statusCode = 404;
@@ -82,6 +96,28 @@ class MiniRouter {
       }
     };
     next();
+  }
+
+  getParams(cachedPath, reqPath) {
+    const cachedSplit = cachedPath.split('/');
+    const reqSplit = reqPath.split('/');
+  
+    if (cachedSplit.length !== reqSplit.length) {
+      return null;
+    }
+  
+    const param = {}
+
+    for (let i = 0; i < cachedSplit.length; i++) {
+      if (cachedSplit[i].startsWith(':')) {
+        const paramName = cachedSplit[i].slice(1);
+        param[paramName] = reqSplit[i];
+      } else if (cachedSplit[i] !== reqSplit[i]) {
+        return null;
+      }
+    }
+  
+    return param;
   }
 }
 

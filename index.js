@@ -10,6 +10,8 @@ class MiniRouter {
       PATCH: {},
       DELETE: {},
     };
+
+    this.middlewares = [];
   }
 
   get(path, ...handlers) {
@@ -60,11 +62,16 @@ class MiniRouter {
       }
 
       this.parseBody(req, () => {
-        this.runHandlers(routeHandlers, req, res);
+        const allHandlers = [...this.middlewares, ...routeHandlers];
+        this.runHandlers(allHandlers, req, res);
       });
     });
 
     server.listen(port, callback);
+  }
+
+  use(handler) {
+    this.middlewares.push(handler);
   }
 
   parseBody(req, handle) {

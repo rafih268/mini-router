@@ -13,11 +13,16 @@ app.use((req, res, next) => {
   }
 })
 
-app.get("/api", apiController.getHandler);
+app.group("/api", function(app) {
+  app.get("/users/:id", apiController.getUserHandler);
+  app.post("/", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
+});
 
-app.get("/api/users/:id", apiController.getUserHandler);
+// Routes below tested within group function
 
-app.post("/api", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
+// app.get("/api/users/:id", apiController.getUserHandler);
+
+// app.post("/api", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
 
 app.put("/api", apiController.putHandler);
 

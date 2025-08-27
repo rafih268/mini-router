@@ -76,6 +76,15 @@ class MiniRouter {
     server.listen(port, callback);
   }
 
+  group(basePath, runGroupRoutes) {
+    const previousBase = this.basePath;
+    this.basePath = basePath;
+
+    runGroupRoutes(this);
+
+    this.basePath = previousBase;
+  }
+
   use(handler) {
     this.middlewares.push(handler);
   }

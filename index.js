@@ -12,26 +12,32 @@ class MiniRouter {
     };
 
     this.middlewares = [];
+    this.basePath = "";
+  }
+
+  register(method, path, handlers) {
+    const newPath = this.basePath + path;
+    this.routes[method][newPath] = handlers;
   }
 
   get(path, ...handlers) {
-    this.routes.GET[path] = handlers;
+    this.register("GET", path, handlers);
   }
 
   post(path, ...handlers) {
-    this.routes.POST[path] = handlers;
+    this.register("POST", path, handlers);
   }
 
   put(path, ...handlers) {
-    this.routes.PUT[path] = handlers;
+    this.register("PUT", path, handlers);
   }
 
   patch(path, ...handlers) {
-    this.routes.PATCH[path] = handlers;
+    this.register("PATCH", path, handlers);
   }
 
   delete(path, ...handlers) {
-    this.routes.DELETE[path] = handlers;
+    this.register("DELETE", path, handlers);
   }
 
   listen(port, callback) {

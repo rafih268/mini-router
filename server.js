@@ -19,6 +19,8 @@ app.group("/api/users", (app) => {
       res.end(JSON.stringify({ message: `User ${req.params.id} class retrieved` }));
     });
   });
+
+  app.get("/", apiController.getHandler);
 });
 
 app.listen(3000, () => {

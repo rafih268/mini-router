@@ -16,7 +16,10 @@ class MiniRouter {
   }
 
   register(method, path, handlers) {
-    const newPath = this.basePath + path;
+    let newPath = this.basePath + path;
+    if (newPath.endsWith("/")) {
+      newPath = newPath.slice(0, -1);
+    }
     this.routes[method][newPath] = handlers;
   }
 

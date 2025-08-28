@@ -13,22 +13,13 @@ app.use((req, res, next) => {
   }
 })
 
-app.group("/api", function(app) {
-  app.get("/users/:id", apiController.getUserHandler);
-  app.post("/", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
+app.group("/api/users", (app) => {
+  app.group("/:id", (app) => {
+    app.get("/class", (req, res) => {
+      res.end(JSON.stringify({ message: `User ${req.params.id} class retrieved` }));
+    });
+  });
 });
-
-// Routes below tested within group function
-
-// app.get("/api/users/:id", apiController.getUserHandler);
-
-// app.post("/api", middleware.mwOne, middleware.mwTwo, apiController.postHandler);
-
-app.put("/api", apiController.putHandler);
-
-app.patch("/api", apiController.patchHandler);
-
-app.delete("/api", apiController.deleteHandler);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000")

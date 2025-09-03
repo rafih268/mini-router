@@ -17,5 +17,15 @@
   "bugs": {
     "url": "https://github.com/rafih268/mini-router/issues"
   },
-  "homepage": "https://github.com/rafih268/mini-router#readme"
+  "homepage": "https://github.com/rafih268/mini-router#readme",
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.44.5",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "drizzle-kit": "^0.31.4",
+    "tsx": "^4.20.5"
+  }
 }

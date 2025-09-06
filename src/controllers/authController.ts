@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { usersTable } from "../db/schema";
 import { signUpSchema, signInSchema } from "../validators/authValidators";
 
+const JWT_SECRET = process.env.JWT_SECRET || "secretjsontoken";
+
 export const signUpHandler = async (req: any, res: any) => {
   try {
     const data = signUpSchema.parse(req.body);
@@ -15,7 +17,7 @@ export const signUpHandler = async (req: any, res: any) => {
       .where(eq(usersTable.username, data.username));
 
     if (existingUser.length > 0) {
-      res.statusCode(400);
+      res.statusCode = 400;
       return res.end(JSON.stringify( { error: "Username already exists" }));
     }
 
@@ -32,13 +34,42 @@ export const signUpHandler = async (req: any, res: any) => {
     res.end(JSON.stringify({
       message: "User created",
       user: { id: newUser.id, username: newUser.username }
-    }))
+    }));
   } catch (err: any) {
     res.statusCode = 400;
-    res.end(JSON.stringify({ error: err.errors || err.message }));
+    res.end(JSON.stringify({ error: err.message }));
   }
-}
+};
 
-export const signInHandler = (req: any, res: any) => {
-  res.end(JSON.stringify({ message: "Sign in has been handled" }));
-}
+export const signInHandler = async (req: any, res: any) => {
+  try {
+    const data = signInSchema.parse(req.body);
+
+    const [user]: any = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.username, data.username));
+
+    if (!user) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: "Invalid credentials" }));
+    }
+
+    const pwMatch = await bcrypt.compare(data.password, user.password);
+
+    if (!pwMatch) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: "Invalid credentials" }));
+    }
+
+    const token = jwt.sign({
+      userId: user.id,
+      username: user.username
+    }, JWT_SECRET, { expiresIn: "1h" });
+
+    res.end(JSON.stringify({ message: "Sign-in successful", token }));
+  } catch (err: any) {
+    res.statusCode = 400;
+    res.end(JSON.stringify({ error: err.message }));
+  }
+};

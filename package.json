@@ -4,7 +4,8 @@
   "description": "Mini HTTP server framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node ./src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,22 @@
   "bugs": {
     "url": "https://github.com/rafih268/mini-router/issues"
   },
-  "homepage": "https://github.com/rafih268/mini-router#readme"
+  "homepage": "https://github.com/rafih268/mini-router#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.44.5",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "ts-node": "^10.9.2",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.3.1",
+    "@types/pg": "^8.15.5",
+    "drizzle-kit": "^0.31.4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
 }

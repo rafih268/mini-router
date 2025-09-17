@@ -78,3 +78,22 @@ export const signInHandler = async (req: any, res: any) => {
     res.end(JSON.stringify({ error: err.message }));
   }
 };
+
+export const signOutHandler = async (req: any, res: any) => {
+  try {
+    if (!req.user) {
+      res.statusCode = 401;
+      return res.end(JSON.stringify({ err: "Unauthorized" }));
+    }
+
+    await db
+      .update(usersTable)
+      .set({ status: "inactive" })
+      .where(eq(usersTable.id, req.user.userId));
+    
+    res.end(JSON.stringify({ message: "Signed out successfully" }));
+  } catch (err: any) {
+    res.statusCode = 500;
+    res.end(JSON.stringify({ error: err.message }));
+  }
+};

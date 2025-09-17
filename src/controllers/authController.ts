@@ -62,11 +62,6 @@ export const signInHandler = async (req: any, res: any) => {
       return res.end(JSON.stringify({ error: "Invalid credentials" }));
     }
 
-    await db
-      .update(usersTable)
-      .set({ status: "active" })
-      .where(eq(usersTable.id, user.id));
-
     const token = jwt.sign({
       userId: user.id,
       username: user.username

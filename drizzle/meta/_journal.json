@@ -15,6 +15,13 @@
       "when": 1757002854022,
       "tag": "0001_mixed_morlun",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758142064435,
+      "tag": "0002_cuddly_lilith",
+      "breakpoints": true
     }
   ]
 }

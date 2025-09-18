@@ -1,4 +1,5 @@
 import * as jwt from "jsonwebtoken";
+import { cacheManager } from "../cache";
 const JWT_SECRET = process.env.JWT_SECRET || "secretjsontoken";
 
 export const mwOne = (req: any, res: any, next: () => void) => {
@@ -11,7 +12,7 @@ export const mwTwo = (req: any, res: any, next: () => void) => {
   next();
 }
 
-export const verifyToken = (req: any, res: any, next: () => void) => {
+export const verifyToken = async (req: any, res: any, next: () => void) => {
   const authHeader = (req.headers["authorization"] || "") as string;
 
   if (!authHeader.startsWith("Bearer ")) {
@@ -22,7 +23,15 @@ export const verifyToken = (req: any, res: any, next: () => void) => {
   const token: any = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+
+    const cachedToken = await cacheManager.get(`user_${decoded.userId}_token`)
+
+    if (!cachedToken || cachedToken !== token) {
+      res.statusCode = 401;
+      return res.end(JSON.stringify({ error: "Token expired or revoked" }));
+    }
+
     req.user = decoded;
     next();
   } catch (err: any) {

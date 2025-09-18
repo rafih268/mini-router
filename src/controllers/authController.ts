@@ -4,6 +4,7 @@ import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { usersTable } from "../db/schema";
 import { signUpSchema, signInSchema } from "../validators/authValidators";
+import { cacheManager } from "../cache";
 
 const JWT_SECRET = process.env.JWT_SECRET || "secretjsontoken";
 
@@ -72,6 +73,8 @@ export const signInHandler = async (req: any, res: any) => {
       username: user.username
     }, JWT_SECRET, { expiresIn: "1h" });
 
+    await cacheManager.put(`user_${user.id}_token`, token, 3600);
+
     res.end(JSON.stringify({ message: "Sign-in successful", token }));
   } catch (err: any) {
     res.statusCode = 400;
@@ -90,6 +93,8 @@ export const signOutHandler = async (req: any, res: any) => {
       .update(usersTable)
       .set({ status: "inactive" })
       .where(eq(usersTable.id, req.user.userId));
+    
+    await cacheManager.destroy(`user_${req.user.userId}_token`);
     
     res.end(JSON.stringify({ message: "Signed out successfully" }));
   } catch (err: any) {

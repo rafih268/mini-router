@@ -24,6 +24,7 @@
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.1.5",
     "pg": "^8.16.3",
     "redis-caching-manager": "^2.1.0",
     "ts-node": "^10.9.2",

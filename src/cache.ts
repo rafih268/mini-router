@@ -6,7 +6,6 @@ export const cacheManager = new RedisCache();
   await cacheManager.connect({
     url: 'redis://localhost:6379',
     ttl: 3600,
-    prefix: "auth",
     enable: true,
   });
 })();

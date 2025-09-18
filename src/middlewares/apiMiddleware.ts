@@ -25,7 +25,7 @@ export const verifyToken = async (req: any, res: any, next: () => void) => {
   try {
     const decoded: any = jwt.verify(token, JWT_SECRET);
 
-    const cachedToken = await cacheManager.get(`user_${decoded.userId}_token`)
+    const cachedToken = await cacheManager.get(`user_${decoded.userId}_${decoded.deviceId}`);
 
     if (!cachedToken || cachedToken !== token) {
       res.statusCode = 401;

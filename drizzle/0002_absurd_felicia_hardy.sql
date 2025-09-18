@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "status" varchar(50) DEFAULT 'inactive' NOT NULL;

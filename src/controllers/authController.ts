@@ -4,6 +4,8 @@ import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { usersTable } from "../db/schema";
 import { signUpSchema, signInSchema } from "../validators/authValidators";
+import { cacheManager } from "../cache";
+import { nanoid } from 'nanoid';
 
 const JWT_SECRET = process.env.JWT_SECRET || "secretjsontoken";
 
@@ -62,10 +64,22 @@ export const signInHandler = async (req: any, res: any) => {
       return res.end(JSON.stringify({ error: "Invalid credentials" }));
     }
 
+    await db
+      .update(usersTable)
+      .set({ status: "active" })
+      .where(eq(usersTable.id, user.id));
+
+    const deviceId = nanoid();
+
     const token = jwt.sign({
       userId: user.id,
-      username: user.username
+      username: user.username,
+      deviceId
     }, JWT_SECRET, { expiresIn: "1h" });
+
+    await cacheManager
+      .tags([`user_${user.id}_sessions`])
+      .set(`user_${user.id}_${deviceId}`, token, 3600);
 
     res.end(JSON.stringify({ message: "Sign-in successful", token }));
   } catch (err: any) {
@@ -73,3 +87,47 @@ export const signInHandler = async (req: any, res: any) => {
     res.end(JSON.stringify({ error: err.message }));
   }
 };
+
+export const signOutHandler = async (req: any, res: any) => {
+  try {
+    if (!req.user) {
+      res.statusCode = 401;
+      return res.end(JSON.stringify({ err: "Unauthorized" }));
+    }
+
+    await db
+      .update(usersTable)
+      .set({ status: "inactive" })
+      .where(eq(usersTable.id, req.user.userId));
+    
+    await cacheManager.destroy(`user_${req.user.userId}_${req.user.deviceId}`);
+    
+    res.end(JSON.stringify({ message: "Signed out successfully" }));
+  } catch (err: any) {
+    res.statusCode = 500;
+    res.end(JSON.stringify({ error: err.message }));
+  }
+};
+
+export const signOutFromAll = async (req: any, res: any) => {
+  try {
+    if (!req.user) {
+      res.statusCode = 401;
+      return res.end(JSON.stringify({ err: "Unauthorized" }));
+    }
+
+    await db
+      .update(usersTable)
+      .set({ status: "inactive" })
+      .where(eq(usersTable.id, req.user.userId));
+    
+    const success = await cacheManager.tags([`user_${req.user.userId}_sessions`]).flush();
+
+    res.end(JSON.stringify({
+      message: "Signed out from all devices",
+      success
+    }))
+  } catch (err) {
+
+  }
+}
